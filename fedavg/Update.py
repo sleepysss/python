@@ -9,7 +9,7 @@ import numpy as np
 import random
 from sklearn import metrics
 
-
+#另一種資料分割的方法為用sampler
 class DatasetSplit(Dataset):  #each user
     def __init__(self, dataset, idxs):
         #idxs:每個user分到的index(第幾張圖片),為一個set
@@ -18,13 +18,15 @@ class DatasetSplit(Dataset):  #each user
 
     def __len__(self):
         return len(self.idxs)
-
-    def __getitem__(self, item):
-        image, label = self.dataset[self.idxs[item]]  #设置Transform之后，返回的是一个元组形式的数据
+    
+    #the __getitem__ function loads and return a sample from the dataset at the given index
+    #item和sampler有關係
+    def __getitem__(self, item): 
+        image, label = self.dataset[self.idxs[item]]  #data sample
         return image, label
 
 
-class LocalUpdate(object):   #each user
+class LocalUpdate(object):   #each user   Python3中的類別都默認繼承自object,也可以class LocalUpdate:這樣寫
     def __init__(self, args, dataset=None, idxs=None):
         self.args = args
         self.loss_func = nn.CrossEntropyLoss()

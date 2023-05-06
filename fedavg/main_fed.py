@@ -18,9 +18,9 @@ from models.Fed import FedAvg
 from models.test import test_img
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': #自己執行時才會做if下面的動作,被別人引用時則不會執行
     # parse args
-    args = args_parser()
+    args = args_parser() #詳見python的Argparse
     #torch.device代表将torch.Tensor分配到的设备的对象，有cpu和cuda两种
     """
     if torch.cuda.is_available()
@@ -36,22 +36,37 @@ if __name__ == '__main__':
     #.format() 是一個 Python 字符串格式化的方法
     #ex:
     #'Hello, {}!'.format('John') 中，字串中的 {} 會被 'John' 替換，最後生成的字串為 'Hello, John!'
-    args.device = torch.device('cuda:{}'.format(args.gpu) if torch.cuda.is_available() and args.gpu != -1 else 'cpu')
+    
+    #多加一個屬性
+    args.device = torch.device(
+        'cuda:{}'.format(args.gpu) if torch.cuda.is_available() and args.gpu != -1 else 'cpu')
 
     # load dataset and split users
     if args.dataset == 'mnist':
-        trans_mnist = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+        #括号内的数值可以被解析成一行
+        #用transforms.Compose将transforms组合在一起。
+        #ToTensor():將PIL Image或者 ndarray 轉換為tensor，並且歸一化至[0-1],並把(H,W,C)的矩阵转为(C,H,W)
+        #因为pytorch很多函数都是设计成假设你的输入是 （c，h，w）的格式
+        #HWC可以看作是一幅图像的shape，H表示图像的高度，W表示图像的宽度，而C表示一幅图像的通道数(channel)
+        trans_mnist = transforms.Compose([transforms.ToTensor(), 
+                                          transforms.Normalize((0.1307,), (0.3081,))])
         dataset_train = datasets.MNIST('../data/mnist/', train=True, download=True, transform=trans_mnist)
+        #dataset_train[0]:type為tuple
+        #img,label=dataset_train[0]  
+        #img的shape為torch.Size([1,28,28]) shape可得到data的形狀
+        #img的type為torch,Tensor, label的type為int
         dataset_test = datasets.MNIST('../data/mnist/', train=False, download=True, transform=trans_mnist)
-        # sample users
+        # sample users(分配哪些用戶得到dataset中的哪些照片)
         if args.iid:
-            dict_users = mnist_iid(dataset_train, args.num_users)
+            #dict_users為字典(int:set),dict_users[i]:用戶i分到的dataset中的img的index
+            dict_users = mnist_iid(dataset_train, args.num_users) 
         else:
             dict_users = mnist_noniid(dataset_train, args.num_users)
     elif args.dataset == 'cifar':
-        trans_cifar = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-        dataset_train = datasets.CIFAR10('../data/cifar', train=True, download=True, transform=trans_cifar)
-        dataset_test = datasets.CIFAR10('../data/cifar', train=False, download=True, transform=trans_cifar)
+        trans_cifar = transforms.Compose(
+            [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        dataset_train = datasets.CIFAR10('../data/cifar', train=True, download=True,transform=trans_cifar)
+        dataset_test = datasets.CIFAR10('../data/cifar', train=False, download=True,transform=trans_cifar)
         if args.iid:
             dict_users = cifar_iid(dataset_train, args.num_users)
         else:
@@ -85,15 +100,17 @@ if __name__ == '__main__':
     net_best = None
     best_loss = None
     val_acc_list, net_list = [], []
-
+    
+    #應該是每個user都參加,即：fraction為1
     if args.all_clients: 
         print("Aggregation over all clients")
-        w_locals = [w_glob for i in range(args.num_users)]
-    for iter in range(args.epochs):
+        w_locals = [w_glob for i in range(args.num_users)] 
+        
+    for iter in range(args.epochs): #幾輪
         loss_locals = []
-        if not args.all_clients:
+        if not args.all_clients: #if not:測試一個條件是否為假
             w_locals = [] #存m個model的weights
-        m = max(int(args.frac * args.num_users), 1)
+        m = max(int(args.frac * args.num_users), 1) #frac:比例(user中多少比例的可以參與訓練)
         idxs_users = np.random.choice(range(args.num_users), m, replace=False)  #選m個參與這輪
         for idx in idxs_users: #each user
             local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx])
@@ -110,7 +127,7 @@ if __name__ == '__main__':
         net_glob.load_state_dict(w_glob)
 
         # print loss
-        loss_avg = sum(loss_locals) / len(loss_locals)
+        loss_avg = sum(loss_locals) / len(loss_locals) #參與的user此輪的平均loss
         print('Round {:3d}, Average loss {:.3f}'.format(iter, loss_avg))
         loss_train.append(loss_avg)
 
@@ -118,7 +135,8 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(range(len(loss_train)), loss_train)
     plt.ylabel('train_loss')
-    plt.savefig('./save/fed_{}_{}_{}_C{}_iid{}.png'.format(args.dataset, args.model, args.epochs, args.frac, args.iid))
+    plt.savefig('./save/fed_{}_{}_{}_C{}_iid{}.png'.format(
+        args.dataset, args.model, args.epochs, args.frac, args.iid))
 
     # testing
     net_glob.eval()

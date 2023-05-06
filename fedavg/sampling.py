@@ -14,6 +14,7 @@ def mnist_iid(dataset, num_users):
     :return: dict of image index
     """
     num_items = int(len(dataset)/num_users)  #len(dataset): dataset中有幾張照片,所以num_item應該是一個user幾張
+    #dict_users是個字典 key:int,value:set
     dict_users, all_idxs = {}, [i for i in range(len(dataset))] #多重指定,list comprehension
     for i in range(num_users):
         #从数组中随机抽取元素
@@ -39,7 +40,7 @@ def mnist_noniid(dataset, num_users):
     idx_shard = [i for i in range(num_shards)]
     dict_users = {i: np.array([], dtype='int64') for i in range(num_users)}
     idxs = np.arange(num_shards*num_imgs) #此陣列以等差數列的形式產生 np.arange(3) => [0,1,2]
-    labels = dataset.train_labels.numpy() #將label轉成numpy array
+    labels = dataset.targets.numpy() #將label轉成numpy array  原本：dataset.train_labels.numpy()但有warning
 
     # sort labels
     idxs_labels = np.vstack((idxs, labels))
