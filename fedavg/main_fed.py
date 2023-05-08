@@ -90,6 +90,7 @@ if __name__ == '__main__': #自己執行時才會做if下面的動作,被別人�
     img_size = dataset_train[0][0].shape
 
     # build model
+    #定義模型時，使用 to(device) 方法將模型移動到指定的裝置類型上
     if args.model == 'cnn' and args.dataset == 'cifar':
         net_glob = CNNCifar(args=args).to(args.device)
     elif args.model == 'cnn' and args.dataset == 'mnist':
@@ -128,7 +129,7 @@ if __name__ == '__main__': #自己執行時才會做if下面的動作,被別人�
         m = max(int(args.frac * args.num_users), 1) #frac:比例(user中多少比例的可以參與訓練)
         idxs_users = np.random.choice(range(args.num_users), m, replace=False)  #選m個參與這輪
         for idx in idxs_users: #each user
-            local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx])
+            local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx]) #LocalUpdate是個class
             w, loss = local.train(net=copy.deepcopy(net_glob).to(args.device)) #net=... 拿global model
             if args.all_clients:
                 w_locals[idx] = copy.deepcopy(w)
