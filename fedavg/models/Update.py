@@ -46,6 +46,11 @@ class LocalUpdate(object):   #each user   Python3中的類別都默認繼承自o
                 #在訓練過程中，使用 to(device) 方法將張量和模型移動到指定的裝置類型上。
                 images, labels = images.to(self.args.device), labels.to(self.args.device)
                 net.zero_grad() #梯度清零
+                """
+                前向傳播中的model(images)介紹:
+                Python 會自動識別 model 是一個對象，並且 input_tensor 是一個輸入參數。由於 model 繼承了 nn.Module，因此 Python 會自動調用 model 對象
+                的 __call__ 方法，該方法實現了對 forward 方法的調用。因此，這個表達式相當於調用 model.forward(input_tensor)。
+                """
                 log_probs = net(images) #前向傳播
                 loss = self.loss_func(log_probs, labels) #計算損失函數
                 loss.backward() #反向傳播
