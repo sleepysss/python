@@ -43,6 +43,7 @@ class LocalUpdate(object):   #each user   Python3中的類別都默認繼承自o
         for iter in range(self.args.local_ep): #local端做幾輪
             batch_loss = []
             for batch_idx, (images, labels) in enumerate(self.ldr_train):
+                #在訓練過程中，使用 to(device) 方法將張量和模型移動到指定的裝置類型上。
                 images, labels = images.to(self.args.device), labels.to(self.args.device)
                 net.zero_grad() #梯度清零
                 log_probs = net(images) #前向傳播
