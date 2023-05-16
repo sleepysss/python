@@ -3,6 +3,7 @@
 fedavg_plus_droprate:有考慮到有些用戶在給定時間內無法做完需直接拋棄(修改了reproduction的一些地方)
 
 程式跑法：
+
 python main_fed.py --dataset mnist --num_channel 1 --model cnn --epochs 10 --gpu 0 --drop 0.9 --frac 1 --local_ep 1       
 
 
