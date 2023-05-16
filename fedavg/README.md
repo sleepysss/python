@@ -1,3 +1,10 @@
+此層的檔案為reproduction的原版
+
+fedavg_plus_droprate:有考慮到有些用戶在給定時間內無法做完須直接拋棄(修改了一些地方)
+
+
+
+
 # Federated Learning [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4321561.svg)](https://doi.org/10.5281/zenodo.4321561)
 
 This is partly the reproduction of the paper of [Communication-Efficient Learning of Deep Networks from Decentralized Data](https://arxiv.org/abs/1602.05629)   
