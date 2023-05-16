@@ -1,3 +1,7 @@
+此層的檔案(除了fedprox_pytorch外)皆為論文作者提供的使用tensorflow1.x實作的版本,並加上了註解
+
+fedprox_pytorch則是修改了sleepysss/python/fedavg的code改成的pytorch version,並有考慮drop_rate
+
 # Federated Optimization in Heterogeneous Networks
 
 This repository contains the code and experiments for the paper:
