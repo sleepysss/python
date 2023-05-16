@@ -1,6 +1,6 @@
-此層的檔案為reproduction的原版
+此層的所有檔案(除了fedavg_plus_droprate外)皆為reproduction的原版,並加上了註解
 
-fedavg_plus_droprate:有考慮到有些用戶在給定時間內無法做完需直接拋棄(修改了一些地方)
+fedavg_plus_droprate:有考慮到有些用戶在給定時間內無法做完需直接拋棄(修改了reproduction的一些地方)
 
 
 
