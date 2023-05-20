@@ -1,3 +1,7 @@
+對原版的code加些註解
+
+
+
 # Node Selection Toward Faster Convergence for Federated Learning on Non-IID Data (submitted to IEEE TNSE)
 
 
